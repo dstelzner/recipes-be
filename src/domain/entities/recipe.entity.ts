@@ -5,10 +5,10 @@ export class Recipe {
     public summary: string,
     public ingredients: string[],
     public steps: string[],
-    public chefId: number,
-    public createdAt: Date,
-    public updatedAt: Date,
+    public chefId: string,
     public images: { url: string; isThumbnail: boolean }[] = [],
+    public createdAt?: Date,
+    public updatedAt?: Date,
     public labels?: string[],
   ) {}
 

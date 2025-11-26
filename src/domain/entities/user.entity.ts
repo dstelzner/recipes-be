@@ -21,4 +21,8 @@ export class User {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(this.email);
   }
+
+  changeRole(newRole: UserRole): void {
+    this.role = newRole;
+  }
 }
