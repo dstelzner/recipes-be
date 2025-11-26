@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { Column, DataType, Model, Table } from 'sequelize-typescript';
 import { UserRole } from 'src/domain/entities/user.entity';
 
-@Table
+@Table({ paranoid: true })
 export class UserModel extends Model {
   @Column({ type: DataType.UUID, primaryKey: true, defaultValue: randomUUID() })
   id: string;

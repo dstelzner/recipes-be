@@ -8,7 +8,7 @@ import {
 } from 'sequelize-typescript';
 import { UserModel } from './user.model';
 
-@Table
+@Table({ paranoid: true })
 export class RecipeModel extends Model {
   @Column({ type: DataType.UUID, primaryKey: true, defaultValue: randomUUID() })
   id: string;
