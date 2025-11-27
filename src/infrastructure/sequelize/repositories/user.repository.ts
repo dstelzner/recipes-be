@@ -1,14 +1,12 @@
 // src/infrastructure/sequelize/repositories/recipe.repository.ts
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { RecipeModel } from '../models/recipe.model';
-import { Recipe } from '../../../domain/entities/recipe.entity';
-import { Pagination } from 'src/domain/entities/pagination.entity';
-import { User } from 'src/domain/entities/user.entity';
+import { User } from '../../../domain/entities/user.entity';
 import { UserModel } from '../models/user.model';
+import { IUserRepository } from '../../../domain/repositories/user.repository';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   constructor(@InjectModel(UserModel) private model: typeof UserModel) {}
 
   async save(user: User): Promise<User> {
