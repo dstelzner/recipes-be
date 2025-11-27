@@ -4,7 +4,7 @@ import { UserRole } from 'src/domain/entities/user.entity';
 
 @Table({ paranoid: true })
 export class UserModel extends Model {
-  @Column({ type: DataType.UUID, primaryKey: true, defaultValue: randomUUID() })
+  @Column({ type: DataType.UUID, primaryKey: true })
   id: string;
 
   @Column({ type: DataType.STRING, allowNull: false })

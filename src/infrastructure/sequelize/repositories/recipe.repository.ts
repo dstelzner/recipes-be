@@ -35,7 +35,6 @@ export class RecipeRepository implements IRecipeRepository {
   ): Promise<Pagination<Recipe>> {
     const offset = (page - 1) * limit;
 
-    // Build dynamic where clause based on filters
     const where: any = {};
 
     if (filter?.title) {
@@ -43,7 +42,7 @@ export class RecipeRepository implements IRecipeRepository {
     }
 
     if (filter?.label) {
-      where.labels = { [Op.contains]: [filter.label] };
+      where.labels = { [Op.contains]: filter.label };
     }
 
     if (filter?.chefId) {
