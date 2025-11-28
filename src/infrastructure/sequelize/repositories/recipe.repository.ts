@@ -3,7 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { RecipeModel } from '../models/recipe.model';
+import { UserModel } from '../models/user.model';
 import { Recipe } from '../../../domain/entities/recipe.entity';
+import { User } from '../../../domain/entities/user.entity';
 import { Pagination } from 'src/domain/entities/pagination.entity';
 import { IRecipeRepository } from 'src/domain/repositories/recipe.repository';
 
@@ -13,25 +15,17 @@ export class RecipeRepository implements IRecipeRepository {
 
   async save(recipe: Recipe): Promise<Recipe> {
     const model = await this.model.create({ ...recipe });
+    const savedModel = await this.model.findByPk(model.id, {
+      include: [UserModel],
+    });
 
-    return new Recipe(
-      model.id,
-      model.title,
-      model.summary,
-      model.ingredients,
-      model.steps,
-      model.chefId,
-      model.images,
-      model.createdAt,
-      model.updatedAt,
-      model.labels,
-    );
+    return this.toEntity(savedModel);
   }
 
   async findAll(
     page = 1,
     limit = 10,
-    filter?: { title?: string; label?: string; chefId?: string },
+    filter?: { title?: string; labels?: string[]; chefId?: string },
   ): Promise<Pagination<Recipe>> {
     const offset = (page - 1) * limit;
 
@@ -41,8 +35,8 @@ export class RecipeRepository implements IRecipeRepository {
       where.title = { [Op.like]: `%${filter.title}%` };
     }
 
-    if (filter?.label) {
-      where.labels = { [Op.contains]: filter.label };
+    if (filter?.labels) {
+      where.labels = { [Op.contains]: [filter.labels] };
     }
 
     if (filter?.chefId) {
@@ -54,43 +48,19 @@ export class RecipeRepository implements IRecipeRepository {
       offset,
       limit,
       order: [['createdAt', 'DESC']],
+      include: [UserModel],
     });
 
-    const items = rows.map(
-      (m) =>
-        new Recipe(
-          m.id,
-          m.title,
-          m.summary,
-          m.ingredients,
-          m.steps,
-          m.chefId,
-          m.images,
-          m.createdAt,
-          m.updatedAt,
-          m.labels,
-        ),
-    );
+    const items = rows.map((m) => this.toEntity(m));
     return Pagination.create(items, count, page, limit);
   }
 
   async update(id: string, recipe: Partial<Recipe>): Promise<Recipe> {
     await this.model.update({ ...recipe }, { where: { id } });
 
-    const updated = await this.model.findByPk(id);
+    const updated = await this.model.findByPk(id, { include: [UserModel] });
 
-    return new Recipe(
-      updated.id,
-      updated.title,
-      updated.summary,
-      updated.ingredients,
-      updated.steps,
-      updated.chefId,
-      updated.images,
-      updated.createdAt,
-      updated.updatedAt,
-      updated.labels,
-    );
+    return this.toEntity(updated);
   }
 
   async delete(id: string): Promise<void> {
@@ -98,7 +68,25 @@ export class RecipeRepository implements IRecipeRepository {
   }
 
   async findById(id: string): Promise<Recipe> {
-    const model = await this.model.findByPk(id);
+    const model = await this.model.findByPk(id, { include: [UserModel] });
+
+    if (!model) return null;
+
+    return this.toEntity(model);
+  }
+
+  private toEntity(model: RecipeModel): Recipe {
+    const chef = model.chef
+      ? new User(
+          model.chef.id,
+          model.chef.name,
+          model.chef.email,
+          model.chef.role,
+          model.chef.passwordHash,
+          model.chef.createdAt,
+          model.chef.updatedAt,
+        )
+      : null;
 
     return new Recipe(
       model.id,
@@ -111,6 +99,7 @@ export class RecipeRepository implements IRecipeRepository {
       model.createdAt,
       model.updatedAt,
       model.labels,
+      chef,
     );
   }
 }

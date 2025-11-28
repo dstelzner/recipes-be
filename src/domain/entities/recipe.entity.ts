@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { User } from './user.entity';
 
 export class Recipe {
   constructor(
@@ -12,6 +13,7 @@ export class Recipe {
     public createdAt?: Date,
     public updatedAt?: Date,
     public labels?: string[],
+    public chef?: User,
   ) {}
 
   static create(data: {

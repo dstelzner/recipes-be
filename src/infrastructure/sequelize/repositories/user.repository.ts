@@ -24,15 +24,17 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User> {
     const model = await this.model.findByPk(id);
-    return new User(
-      model.id,
-      model.name,
-      model.email,
-      model.role,
-      model.passwordHash,
-      model.createdAt,
-      model.updatedAt,
-    );
+    return model
+      ? new User(
+          model.id,
+          model.name,
+          model.email,
+          model.role,
+          model.passwordHash,
+          model.createdAt,
+          model.updatedAt,
+        )
+      : null;
   }
 
   async update(id: string, user: Partial<User>): Promise<User> {

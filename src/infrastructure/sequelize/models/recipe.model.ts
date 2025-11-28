@@ -5,6 +5,7 @@ import {
   ForeignKey,
   Model,
   Table,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { UserModel } from './user.model';
 
@@ -28,6 +29,9 @@ export class RecipeModel extends Model {
   @ForeignKey(() => UserModel)
   @Column({ type: DataType.UUID, allowNull: false })
   chefId: string;
+
+  @BelongsTo(() => UserModel)
+  chef: UserModel;
 
   @Column({ type: DataType.DATE, allowNull: false })
   createdAt: Date;

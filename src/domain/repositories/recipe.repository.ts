@@ -6,7 +6,7 @@ export interface IRecipeRepository {
   findAll(
     page?: number,
     limit?: number,
-    filter?: { title?: string; label?: string; chefId?: string },
+    filter?: { title?: string; labels?: string[]; chefId?: string },
   ): Promise<Pagination<Recipe>>;
   update(id: string, recipe: Partial<Recipe>): Promise<Recipe>;
   delete(id: string): Promise<void>;
